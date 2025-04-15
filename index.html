@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏账号交易平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .page { display: none; }
+        .active-page { display: block; }
+        .navbar { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 (登录后显示) -->
+    <nav id="main-nav" class="navbar navbar-expand-lg navbar-dark bg-dark" style="display: none;">
+        <div class="container">
+            <a class="navbar-brand" href="#">游戏账号交易</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="market">交易市场</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="recharge">充值中心</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="support">客服中心</a>
+                    </li>
+                </ul>
+                <span class="navbar-text">
+                    欢迎, <span id="username-display"></span> | 
+                    <a href="#" id="logout-btn" class="text-light">退出</a>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 登录/注册页面 -->
+    <div id="auth-page" class="container mt-5 page active-page">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#" id="login-tab">登录</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" id="register-tab">注册</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <!-- 登录表单 -->
+                        <form id="login-form" class="auth-form">
+                            <div class="mb-3">
+                                <label for="login-email" class="form-label">邮箱</label>
+                                <input type="email" class="form-control" id="login-email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="login-password" class="form-label">密码</label>
+                                <input type="password" class="form-control" id="login-password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">登录</button>
+                        </form>
+                        
+                        <!-- 注册表单 -->
+                        <form id="register-form" class="auth-form" style="display: none;">
+                            <div class="mb-3">
+                                <label for="register-email" class="form-label">邮箱</label>
+                                <input type="email" class="form-control" id="register-email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="register-password" class="form-label">密码</label>
+                                <input type="password" class="form-control" id="register-password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="register-username" class="form-label">用户名</label>
+                                <input type="text" class="form-control" id="register-username" required>
+                            </div>
+                            <button type="submit" class="btn btn-success">注册</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 交易市场页面 -->
+    <div id="market-page" class="container page">
+        <h2 class="my-4">游戏账号交易市场</h2>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" id="search-input" class="form-control" placeholder="搜索游戏...">
+                    <button class="btn btn-outline-secondary" id="search-btn">搜索</button>
+                </div>
+            </div>
+            <div class="col-md-6 text-end">
+                <button class="btn btn-primary" id="sell-account-btn">出售账号</button>
+            </div>
+        </div>
+        <div id="account-list" class="row"></div>
+    </div>
+
+    <!-- 出售账号模态框 -->
+    <div class="modal fade" id="sellModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">出售游戏账号</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="sell-form">
+                        <div class="mb-3">
+                            <label class="form-label">游戏名称</label>
+                            <input type="text" class="form-control" id="sell-game" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">游戏区服</label>
+                            <input type="text" class="form-control" id="sell-server">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">账号描述</label>
+                            <textarea class="form-control" id="sell-description" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">价格(元)</label>
+                            <input type="number" class="form-control" id="sell-price" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">联系方式</label>
+                            <input type="text" class="form-control" id="sell-contact" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="submit-sell">提交出售</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 充值中心页面 -->
+    <div id="recharge-page" class="container page">
+        <h2 class="my-4">充值中心</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>账户余额</h5>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="text-center">¥<span id="balance-amount">0.00</span></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>充值选项</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary recharge-option" data-amount="10">充值10元</button>
+                            <button class="btn btn-outline-primary recharge-option" data-amount="30">充值30元</button>
+                            <button class="btn btn-outline-primary recharge-option" data-amount="50">充值50元</button>
+                            <button class="btn btn-outline-primary recharge-option" data-amount="100">充值100元</button>
+                            <button class="btn btn-outline-primary recharge-option" data-amount="200">充值200元</button>
+                        </div>
+                        <div class="mt-3">
+                            <label for="custom-amount" class="form-label">自定义金额</label>
+                            <div class="input-group">
+                                <span class="input-group-text">¥</span>
+                                <input type="number" class="form-control" id="custom-amount" min="1">
+                                <button class="btn btn-primary" id="custom-recharge-btn">充值</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>充值记录</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>金额</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recharge-history">
+                                <!-- 充值记录将通过JS动态加载 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 客服中心页面 -->
+    <div id="support-page" class="container page">
+        <h2 class="my-4">客服中心</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>提交问题</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="support-form">
+                            <div class="mb-3">
+                                <label for="support-type" class="form-label">问题类型</label>
+                                <select class="form-select" id="support-type">
+                                    <option value="account">账号问题</option>
+                                    <option value="trade">交易问题</option>
+                                    <option value="payment">支付问题</option>
+                                    <option value="other">其他问题</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="support-content" class="form-label">问题描述</label>
+                                <textarea class="form-control" id="support-content" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">提交</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>历史咨询</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="support-history">
+                            <div class="list-group">
+                                <!-- 历史咨询记录将通过JS动态加载 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
